@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Restaurant Table Booking Platform">
+    <title>{% block title %}Restaurant Booking{% endblock %}</title>
+
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="/static/css/base.css">
+
+    <!-- Component CSS -->
+    {% block extra_css %}{% endblock %}
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/static/images/logo.png">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Main Content -->
+    <div class="app-wrapper">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Base JavaScript -->
+    <script src="/static/js/utils/api.js"></script>
+    <script src="/static/js/utils/auth.js"></script>
+    <script src="/static/js/utils/validation.js"></script>
+
+    <!-- Page-specific JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

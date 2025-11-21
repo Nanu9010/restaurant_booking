@@ -1,0 +1,67 @@
+{% extends "base/base.html" %}
+
+{% block title %}Login - Restaurant Booking{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/auth.css">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Welcome Back</h1>
+            <p>Sign in to your account to continue</p>
+        </div>
+        
+        <form id="loginForm" class="auth-form">
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    class="form-input" 
+                    placeholder="Enter your username"
+                    required
+                    autocomplete="username"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    class="form-input" 
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg auth-submit">
+                Sign In
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="/signup/">Sign Up</a></p>
+        </div>
+    </div>
+    
+    <div class="auth-info">
+        <h2>Restaurant Table Booking</h2>
+        <p>Manage your restaurant bookings efficiently with our comprehensive platform.</p>
+        <ul class="feature-list">
+            <li>✓ Real-time availability management</li>
+            <li>✓ QR code integration</li>
+            <li>✓ Customer booking tracking</li>
+            <li>✓ Comprehensive analytics</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/auth/login.js"></script>
+{% endblock %}

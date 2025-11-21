@@ -1,0 +1,263 @@
+{% extends "base/base.html" %}
+
+{% block title %}Owner Dashboard - Restaurant Booking{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/dashboard.css">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h2>🏪 Restaurant</h2>
+            <p id="restaurantName">Loading...</p>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#overview" class="nav-item active" data-section="overview">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Overview</span>
+            </a>
+            <a href="#bookings" class="nav-item" data-section="bookings">
+                <span class="nav-icon">📅</span>
+                <span class="nav-label">Bookings</span>
+            </a>
+            <a href="#tables" class="nav-item" data-section="tables">
+                <span class="nav-icon">🪑</span>
+                <span class="nav-label">Tables</span>
+            </a>
+            <a href="#qrcode" class="nav-item" data-section="qrcode">
+                <span class="nav-icon">📱</span>
+                <span class="nav-label">QR Code</span>
+            </a>
+            <a href="#profile" class="nav-item" data-section="profile">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">Profile</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <button class="btn btn-danger btn-sm" onclick="handleLogout()">
+                Logout
+            </button>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div>
+                <h1 id="pageTitle">Overview</h1>
+                <p id="pageSubtitle">Welcome back to your dashboard</p>
+            </div>
+            <div class="header-actions">
+                <span class="user-info" id="userInfo">Loading...</span>
+            </div>
+        </header>
+        
+        <!-- Content Sections -->
+        <div class="dashboard-content">
+            <!-- Overview Section -->
+            <section id="section-overview" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <h3>Total Bookings</h3>
+                            <p class="stat-value" id="statTotal">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <h3>Today's Bookings</h3>
+                            <p class="stat-value" id="statToday">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">⏰</div>
+                        <div class="stat-info">
+                            <h3>Upcoming</h3>
+                            <p class="stat-value" id="statUpcoming">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">❌</div>
+                        <div class="stat-info">
+                            <h3>Cancelled</h3>
+                            <p class="stat-value" id="statCancelled">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Today's Bookings</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="todayBookingsList"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Bookings Section -->
+            <section id="section-bookings" class="content-section">
+                <div class="section-controls">
+                    <div class="tabs">
+                        <button class="tab active" data-filter="all">All</button>
+                        <button class="tab" data-filter="today">Today</button>
+                        <button class="tab" data-filter="upcoming">Upcoming</button>
+                        <button class="tab" data-filter="cancelled">Cancelled</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Customer</th>
+                                        <th>Phone</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Table</th>
+                                        <th>Party</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bookingsTableBody">
+                                    <tr>
+                                        <td colspan="9" class="text-center">Loading bookings...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Tables Section -->
+            <section id="section-tables" class="content-section">
+                <div class="section-controls">
+                    <button class="btn btn-primary" onclick="showAddTableModal()">
+                        + Add Table
+                    </button>
+                </div>
+                
+                <div class="tables-grid" id="tablesGrid">
+                    <p>Loading tables...</p>
+                </div>
+            </section>
+            
+            <!-- QR Code Section -->
+            <section id="section-qrcode" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Your Booking QR Code</h3>
+                    </div>
+                    <div class="card-body qr-section">
+                        <div id="qrCodeContainer">
+                            <img id="qrCodeImage" src="" alt="QR Code">
+                        </div>
+                        <div class="qr-info">
+                            <p><strong>Booking URL:</strong></p>
+                            <div class="url-box">
+                                <input type="text" id="bookingUrl" readonly>
+                                <button class="btn btn-secondary" onclick="copyBookingUrl()">Copy</button>
+                            </div>
+                            <p class="help-text">Share this QR code with your customers to let them book tables</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Profile Section -->
+            <section id="section-profile" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Restaurant Profile</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="profileForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Restaurant Name</label>
+                                    <input type="text" id="profileName" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" id="profileEmail" class="form-input">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" id="profilePhone" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">City</label>
+                                    <input type="text" id="profileCity" class="form-input">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Address</label>
+                                <textarea id="profileAddress" class="form-input" rows="3"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<!-- Add Table Modal -->
+<div id="addTableModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Add New Table</h3>
+            <button class="modal-close" onclick="closeAddTableModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="addTableForm">
+                <div class="form-group">
+                    <label class="form-label">Table Number/Name</label>
+                    <input type="text" id="tableNumber" class="form-input" placeholder="T1, Table 5, Patio-A">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Capacity</label>
+                    <input type="number" id="tableCapacity" class="form-input" min="1" max="20" placeholder="4">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description (Optional)</label>
+                    <input type="text" id="tableDescription" class="form-input" placeholder="Window seat, Outdoor patio">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddTableModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Table</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/dashboards/owner.js"></script>
+{% endblock %}

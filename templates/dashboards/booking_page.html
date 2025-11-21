@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Table</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .restaurant-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .restaurant-info h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .table-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .table-option:hover {
+            border-color: #667eea;
+            background: #f8f9fa;
+        }
+
+        .table-option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="restaurantName">Loading...</h1>
+            <p id="restaurantAddress"></p>
+        </div>
+
+        <div class="content">
+            <div class="restaurant-info" id="restaurantInfo" style="display:none;">
+                <h2>About Us</h2>
+                <p id="restaurantDescription"></p>
+                <p><strong>Hours:</strong> <span id="restaurantHours"></span></p>
+            </div>
+
+            <div class="message" id="message"></div>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Loading restaurant details...</p>
+            </div>
+
+            <form id="bookingForm" style="display:none;">
+                <div class="form-group">
+                    <label>Your Name *</label>
+                    <input type="text" id="customerName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="customerEmail" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone *</label>
+                    <input type="tel" id="customerPhone" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Number of People *</label>
+                    <input type="number" id="partySize" min="1" max="20" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" id="bookingDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Time *</label>
+                    <input type="time" id="bookingTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Table *</label>
+                    <div class="table-grid" id="tableGrid"></div>
+                    <input type="hidden" id="tableId" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Special Requests</label>
+                    <textarea id="specialRequests" rows="3" placeholder="Any special requirements..."></textarea>
+                </div>
+
+                <button type="submit" class="btn">Book Table</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Get restaurant ID from URL
+        const urlParts = window.location.pathname.split('/');
+        const restaurantId = urlParts[2]; // Assumes URL like /r/<uuid>/book
+
+        const API_BASE = 'http://localhost:8000/api';
+
+        let selectedTableId = null;
+        let availableTables = [];
+
+        // Show message
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            msg.style.display = 'block';
+
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 5000);
+        }
+
+        // Load restaurant info
+        async function loadRestaurantInfo() {
+            document.getElementById('loading').style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_BASE}/restaurants/public/${restaurantId}/info/`);
+                const data = await response.json();
+
+                document.getElementById('restaurantName').textContent = data.name;
+                document.getElementById('restaurantAddress').textContent = `${data.city}, ${data.state}`;
+                document.getElementById('restaurantDescription').textContent = data.description || 'Welcome to our restaurant!';
+                document.getElementById('restaurantHours').textContent = `${data.opening_time} - ${data.closing_time}`;
+
+                document.getElementById('restaurantInfo').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('bookingForm').style.display = 'block';
+
+                // Set min date to today
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('bookingDate').min = today;
+
+                loadTables();
+            } catch (error) {
+                showMessage('Error loading restaurant information', 'error');
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Load available tables
+        async function loadTables() {
+            try {
+                const response = await fetch(`${API_BASE}/restaurants/public/${restaurantId}/tables/`);
+                availableTables = await response.json();
+                renderTables();
+            } catch (error) {
+                showMessage('Error loading tables', 'error');
+            }
+        }
+
+        // Render table options
+        function renderTables() {
+            const grid = document.getElementById('tableGrid');
+            grid.innerHTML = '';
+
+            availableTables.forEach(table => {
+                const div = document.createElement('div');
+                div.className = 'table-option';
+                div.innerHTML = `
+                    <strong>Table ${table.table_number}</strong><br>
+                    Seats ${table.capacity}
+                `;
+                div.onclick = () => selectTable(table.id, div);
+                grid.appendChild(div);
+            });
+        }
+
+        // Select table
+        function selectTable(tableId, element) {
+            selectedTableId = tableId;
+            document.getElementById('tableId').value = tableId;
+
+            // Update UI
+            document.querySelectorAll('.table-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+
+        // Handle form submission
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!selectedTableId) {
+                showMessage('Please select a table', 'error');
+                return;
+            }
+
+            const bookingData = {
+                customer_name: document.getElementById('customerName').value,
+                customer_email: document.getElementById('customerEmail').value,
+                customer_phone: document.getElementById('customerPhone').value,
+                party_size: parseInt(document.getElementById('partySize').value),
+                booking_date: document.getElementById('bookingDate').value,
+                booking_time: document.getElementById('bookingTime').value,
+                table_id: selectedTableId,
+                special_requests: document.getElementById('specialRequests').value,
+                duration_hours: 2.0
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/bookings/public/${restaurantId}/book/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('Booking confirmed! You will receive a confirmation email.', 'success');
+                    document.getElementById('bookingForm').reset();
+                    selectedTableId = null;
+                    document.querySelectorAll('.table-option').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                } else {
+                    showMessage(result.error || 'Booking failed. Please try again.', 'error');
+                }
+            } catch (error) {
+                showMessage('Error creating booking. Please try again.', 'error');
+            }
+        });
+
+        // Initialize
+        loadRestaurantInfo();
+    </script>
+</body>
+</html>
